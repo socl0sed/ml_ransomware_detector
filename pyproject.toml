@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "qwe"
+version = "0.1.0"
+description = "asd"
+authors = ["asd <asd>"]
+packages = [{ include = "src"}]
+
+[tool.poetry.dependencies]
+python = "3.10.14"
+requests = "*"
+pandas = "^2.2.3"
+scikit-learn = "~1.1.1"
+joblib = "*"
+tqdm = "*"
+tabulate = "*"
+rich = "^10.4.0"
+art = "^6.3"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.3.0"
+pre-commit = "*"
+isort = "^5.12.0"
+flake8 = "^3.9.0"
+jupyter = "*"
+mypy = "^0.960"
+nbqa = "^0.5.9"
+autoflake = "*"
+pydocstyle = "^6.1.1"
+
+[tool.nbqa.mutate]
+black = 1
+autoflake = 1
+isort = 1
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

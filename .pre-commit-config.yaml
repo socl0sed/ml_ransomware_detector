@@ -1,0 +1,60 @@
+repos:
+  - repo: local
+    hooks:
+      # black for python files
+      - id: black
+        name: black
+        entry: black
+        language: system
+        types: [python]
+
+      # flake8 for python files
+      - id: flake8
+        name: flake8
+        entry: flake8
+        language: system
+        types: [ python ]
+        args: [ "--max-line-length=88", "--ignore=E203, W503" ]
+
+      # isort for python files
+      - id: isort
+        name: isort
+        entry: isort
+        language: system
+        types: [python]
+        args: ["--profile=black", "--filter-files", "-m=3"]
+
+      # mypy for python files
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        types: [python]
+        args: ["--follow-imports=silent",
+               "--disallow-untyped-defs",
+               "--ignore-missing-imports"]
+
+      # black for notebooks
+      - id: nbqa-black
+        name: nbqa-black
+        entry: nbqa black
+        language: system
+        types: [jupyter]
+        exclude: "notebooks/chaos"
+        args: ["--nbqa-mutate"]
+
+      # autoflake for notebooks
+      - id: nbqa-autoflake
+        name: nbqa-autoflake
+        entry: nbqa autoflake
+        language: system
+        types: [jupyter]
+        exclude: "notebooks/chaos"
+
+      # isort for notebooks
+      - id: nbqa-isort
+        name: nbqa-isort
+        entry: nbqa isort
+        language: system
+        types: [jupyter]
+        exclude: "notebooks/chaos"
