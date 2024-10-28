@@ -1,4 +1,5 @@
 import os
+import zlib
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
@@ -59,16 +60,30 @@ def encrypt_file(input_file, output_file, key, iv, algorithm):
     with open(output_file, 'wb') as f:
         f.write(ciphertext)
 
+# Функция для сжатия данных
+def compress_file(input_file, output_file):
+    with open(input_file, 'rb') as f:
+        plaintext = f.read()
+
+    # Сжимаем данные с использованием DEFLATE
+    compressed_data = zlib.compress(plaintext)
+
+    with open(output_file, 'wb') as f:
+        f.write(compressed_data)
+
 # Функция для обработки всех файлов в папке
-def encrypt_folder(input_folder, output_folder, key, iv, algorithm):
+def process_folder(input_folder, output_folder, key, iv, algorithm, compress=False):
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
     for filename in os.listdir(input_folder):
         input_file = os.path.join(input_folder, filename)
-        output_file = os.path.join(output_folder, filename + f'.{algorithm}.enc')
-
-        if os.path.isfile(input_file):
+        if compress:
+            output_file = os.path.join(output_folder, filename + '.compressed')
+            compress_file(input_file, output_file)
+            print(f"Сжат файл: {input_file} -> {output_file}")
+        else:
+            output_file = os.path.join(output_folder, filename + f'.{algorithm}.enc')
             encrypt_file(input_file, output_file, key, iv, algorithm)
             print(f"Зашифрован файл: {input_file} -> {output_file} с использованием {algorithm}")
 
@@ -93,9 +108,12 @@ if __name__ == "__main__":
     key_blowfish, iv_blowfish = load_key_and_iv(key_file_blowfish, 'Blowfish')
 
     # Шифруем все файлы в папке с использованием AES
-    encrypt_folder(input_folder, output_folder, key_aes, iv_aes, 'AES')
+    process_folder(input_folder, output_folder, key_aes, iv_aes, 'AES')
 
     # Шифруем все файлы в папке с использованием Blowfish
-    encrypt_folder(input_folder, output_folder, key_blowfish, iv_blowfish, 'Blowfish')
+    process_folder(input_folder, output_folder, key_blowfish, iv_blowfish, 'Blowfish')
 
-    print("Шифрование завершено.")
+    # Сжимаем все исходные файлы
+    process_folder(input_folder, output_folder, None, None, None, compress=True)
+
+    print("Шифрование и сжатие завершено.")
